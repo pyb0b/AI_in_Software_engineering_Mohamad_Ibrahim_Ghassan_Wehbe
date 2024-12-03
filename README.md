@@ -16,7 +16,8 @@ pip install <dependency name>
 ## Usage
 to run this project first navigate to the directory, then type python main.py.
 next, run app.py using the following command on the cmd:
-uvicorn app:app --reload
+poetry shell
+uvicorn src.app:app --reload
 you can use three endpoints with three different endpoints using the POST method on Postman.
 The inputs form should be raw and are indicated in the PowerPoint for each endpoint.
 The step for running docker are indicated in the PowerPoint also.

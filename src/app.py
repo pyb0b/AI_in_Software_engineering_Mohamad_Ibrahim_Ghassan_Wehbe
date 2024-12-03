@@ -6,13 +6,13 @@ import pandas as pd
 from contextlib import asynccontextmanager
 
 # Import components
-from data_loader import DataLoader
-from feature_engineering import FeatureEngineer
-from train_model_knn import RecommenderTrainerKNN
-from train_model_svd import RecommenderTrainerSVD
-from utils import RecommenderUtils
-from evaluate_model import ModelEvaluator
-from monitoring import setup_monitoring
+from src.data.data_loader import load_data
+from src.features.feature_engineering import FeatureEngineer
+from src.models.train_model_knn import RecommenderTrainerKNN
+from src.models.train_model_svd import RecommenderTrainerSVD
+from src.utils.utils import RecommenderUtils
+from src.models.evaluate_model import ModelEvaluator
+from src.monitoring.monitoring import setup_monitoring
 
 # Initialize FastAPI with a lifespan manager
 app = FastAPI()

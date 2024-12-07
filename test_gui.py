@@ -1,10 +1,12 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, font
 import requests
-from tkinter import font
 
-# Functions to handle API calls
-def recommend():
+
+def recommend() -> None:
+    """
+    Call the recommend API endpoint to fetch recommendations for a user.
+    """
     try:
         user_id = recommend_user_id.get()
         model_type = model_choice.get()
@@ -13,21 +15,23 @@ def recommend():
         
         payload = {"user_id": int(user_id), "model_type": model_type}
         response = requests.post("http://127.0.0.1:8000/recommend/", json=payload)
-        #recommend_result_label.config(text=f"Response: {response.json()}")
         data = response.json()
         
         # Extracting movie titles
-        if "recommendations" in data and "title" in data["recommendations"]:
-            titles = data["recommendations"]["title"].values()
-            formatted_titles = "\n".join(titles)
+        if "recommendations" in data:
+            recommendations = data["recommendations"]
+            formatted_titles = "\n".join(recommendations["title"].values())
             recommend_result_label.config(text=f"Recommended Movies:\n{formatted_titles}")
         else:
             recommend_result_label.config(text="No recommendations found.")
-            
     except Exception as e:
         recommend_result_label.config(text=f"Error: {e}")
 
-def add_movie():
+
+def add_movie() -> None:
+    """
+    Call the add_movie API endpoint to add a new movie to the dataset.
+    """
     try:
         movie_id = movie_id_entry.get()
         title = movie_title_entry.get()
@@ -37,7 +41,6 @@ def add_movie():
         
         payload = {"movieId": int(movie_id), "title": title, "genres": genres}
         response = requests.post("http://127.0.0.1:8000/add_movie/", json=payload)
-        #add_movie_result_label.config(text=f"Response: {response.json()}")
         data = response.json()
         
         # Displaying the success message
@@ -48,7 +51,11 @@ def add_movie():
     except Exception as e:
         add_movie_result_label.config(text=f"Error: {e}")
 
-def add_rating():
+
+def add_rating() -> None:
+    """
+    Call the add_ratings API endpoint to add a new rating to the dataset.
+    """
     try:
         user_id = rating_user_id_entry.get()
         movie_id = rating_movie_id_entry.get()
@@ -58,7 +65,6 @@ def add_rating():
         
         payload = [{"userId": int(user_id), "movieId": int(movie_id), "rating": float(rating)}]
         response = requests.post("http://127.0.0.1:8000/add_ratings/", json=payload)
-        #add_ratings_result_label.config(text=f"Response: {response.json()}")
         data = response.json()
         
         # Displaying the success message
@@ -70,71 +76,6 @@ def add_rating():
         add_ratings_result_label.config(text=f"Error: {e}")
 
 
-"""
-# Create main Tkinter window
-root = tk.Tk()
-root.title("API Testing GUI")
-
-# Frame for Recommend Endpoint
-recommend_frame = tk.LabelFrame(root, text="Recommend Endpoint", padx=10, pady=10)
-recommend_frame.pack(side="left", padx=10, pady=10, fill="y")
-
-tk.Label(recommend_frame, text="User ID:").pack(anchor="w")
-recommend_user_id = tk.Entry(recommend_frame)
-recommend_user_id.pack(anchor="w", fill="x")
-
-tk.Label(recommend_frame, text="Model Type:").pack(anchor="w")
-model_choice = tk.StringVar(value="knn")
-tk.Radiobutton(recommend_frame, text="KNN", variable=model_choice, value="knn").pack(anchor="w")
-tk.Radiobutton(recommend_frame, text="SVD", variable=model_choice, value="svd").pack(anchor="w")
-
-tk.Button(recommend_frame, text="Submit", command=recommend).pack(pady=5)
-recommend_result_label = tk.Label(recommend_frame, text="")
-recommend_result_label.pack(anchor="w")
-
-# Frame for Add Movie Endpoint
-add_movie_frame = tk.LabelFrame(root, text="Add Movie Endpoint", padx=10, pady=10)
-add_movie_frame.pack(side="left", padx=10, pady=10, fill="y")
-
-tk.Label(add_movie_frame, text="Movie ID:").pack(anchor="w")
-movie_id_entry = tk.Entry(add_movie_frame)
-movie_id_entry.pack(anchor="w", fill="x")
-
-tk.Label(add_movie_frame, text="Title:").pack(anchor="w")
-movie_title_entry = tk.Entry(add_movie_frame)
-movie_title_entry.pack(anchor="w", fill="x")
-
-tk.Label(add_movie_frame, text="Genres:").pack(anchor="w")
-movie_genres_entry = tk.Entry(add_movie_frame)
-movie_genres_entry.pack(anchor="w", fill="x")
-
-tk.Button(add_movie_frame, text="Submit", command=add_movie).pack(pady=5)
-add_movie_result_label = tk.Label(add_movie_frame, text="")
-add_movie_result_label.pack(anchor="w")
-
-# Frame for Add Ratings Endpoint
-add_ratings_frame = tk.LabelFrame(root, text="Add Ratings Endpoint", padx=10, pady=10)
-add_ratings_frame.pack(side="left", padx=10, pady=10, fill="y")
-
-tk.Label(add_ratings_frame, text="User ID:").pack(anchor="w")
-rating_user_id_entry = tk.Entry(add_ratings_frame)
-rating_user_id_entry.pack(anchor="w", fill="x")
-
-tk.Label(add_ratings_frame, text="Movie ID:").pack(anchor="w")
-rating_movie_id_entry = tk.Entry(add_ratings_frame)
-rating_movie_id_entry.pack(anchor="w", fill="x")
-
-tk.Label(add_ratings_frame, text="Rating:").pack(anchor="w")
-rating_value_entry = tk.Entry(add_ratings_frame)
-rating_value_entry.pack(anchor="w", fill="x")
-
-tk.Button(add_ratings_frame, text="Submit", command=add_rating).pack(pady=5)
-add_ratings_result_label = tk.Label(add_ratings_frame, text="")
-add_ratings_result_label.pack(anchor="w")
-
-# Run Tkinter event loop
-root.mainloop()
-"""
 # Create main Tkinter window
 root = tk.Tk()
 root.title("API Testing GUI")

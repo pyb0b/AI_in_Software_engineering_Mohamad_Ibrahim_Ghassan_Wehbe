@@ -3,10 +3,9 @@ from pydantic import BaseModel
 from typing import List
 import pickle
 import pandas as pd
-from contextlib import asynccontextmanager
 
 # Import components
-from src.data.data_loader import load_data
+from src.data.data_loader import DataLoader
 from src.features.feature_engineering import FeatureEngineer
 from src.models.train_model_knn import RecommenderTrainerKNN
 from src.models.train_model_svd import RecommenderTrainerSVD
@@ -14,56 +13,54 @@ from src.utils.utils import RecommenderUtils
 from src.models.evaluate_model import ModelEvaluator
 from src.monitoring.monitoring import setup_monitoring
 
-# Initialize FastAPI with a lifespan manager
+# Initialize FastAPI with monitoring
 app = FastAPI()
-
-# Initialize monitoring
 setup_monitoring(app)
 
-@app.get("/")
-async def root():
-    return {"message": "API is running and monitoring is enabled!"}
-
-# Global variables for model and data
-movies_df = None
-ratings_df = None
+# Global variables for models and data
+movies_df: pd.DataFrame = None
+ratings_df: pd.DataFrame = None
 user_item_sparse = None
-user_item_matrix = None
-user_item_matrix = None
+user_item_matrix: pd.DataFrame = None
 knn_model = None
 svd_model = None
-recommender_utils = None
+recommender_utils: RecommenderUtils = None
 
 # Paths to data
-MOVIES_PATH = 'movies.csv'
-RATINGS_PATH = 'ratings.csv'
+MOVIES_PATH = "movies.csv"
+RATINGS_PATH = "ratings.csv"
 
 
 class RecommendationRequest(BaseModel):
+    """
+    Request schema for generating recommendations.
+    """
     user_id: int
     model_type: str  # 'knn' or 'svd'
 
-    class Config:
-        # Disable protected namespace warnings
-        protected_namespaces = ()
-
 
 class Movie(BaseModel):
+    """
+    Schema for adding a new movie to the dataset.
+    """
     movieId: int
     title: str
     genres: str
 
 
 class Rating(BaseModel):
+    """
+    Schema for adding a new rating to the dataset.
+    """
     userId: int
     movieId: int
     rating: float
 
 
 @app.on_event("startup")
-async def load_data_and_initialize():
+async def load_data_and_initialize() -> None:
     """
-    Load data, initialize models, and prepare global variables during startup.
+    Load data, initialize models, and prepare global variables during app startup.
     """
     global movies_df, ratings_df, user_item_sparse, user_item_matrix, knn_model, svd_model, recommender_utils
 
@@ -82,22 +79,29 @@ async def load_data_and_initialize():
     knn_model = knn_trainer.train_model()
     svd_model = svd_trainer.train_model()
 
-    # Initialize recommender utils
+    # Initialize recommender utilities
     recommender_utils = RecommenderUtils(user_item_matrix, movies_df, knn_model=knn_model, svd_model=svd_model)
 
     print("Application initialized successfully!")
 
 
+@app.get("/")
+async def root() -> dict:
+    """
+    Root endpoint to confirm API is running.
+    """
+    return {"message": "API is running and monitoring is enabled!"}
+
+
 @app.post("/add_movie/")
-async def add_movie(movie: Movie):
+async def add_movie(movie: Movie) -> dict:
     """
     Add a new movie to the dataset.
     """
     global movies_df
-
     data_loader = DataLoader(MOVIES_PATH, RATINGS_PATH)
+
     try:
-        # Add the movie to the dataset
         data_loader.add_movie(movie.dict())
         movies_df = pd.read_csv(MOVIES_PATH)
         return {"message": f"Movie '{movie.title}' added successfully!"}
@@ -106,7 +110,7 @@ async def add_movie(movie: Movie):
 
 
 @app.post("/add_ratings/")
-async def add_ratings(ratings: List[Rating]):
+async def add_ratings(ratings: List[Rating]) -> dict:
     """
     Add new ratings to the dataset and update models.
     """
@@ -140,7 +144,10 @@ async def add_ratings(ratings: List[Rating]):
 
 
 @app.post("/recommend/")
-async def get_recommendations(request: RecommendationRequest):
+async def get_recommendations(request: RecommendationRequest) -> dict:
+    """
+    Generate movie recommendations for a user.
+    """
     user_id = request.user_id
     model_type = request.model_type.lower()
 
@@ -154,19 +161,25 @@ async def get_recommendations(request: RecommendationRequest):
 
     return {"user_id": user_id, "recommendations": recommendations.to_dict()}
 
+
 @app.get("/evaluate_svd/")
-async def evaluate_svd():
-    # Sample test data for evaluation
+async def evaluate_svd() -> dict:
+    """
+    Evaluate the SVD model using RMSE and MAE metrics.
+    """
     test_data = pd.read_csv(RATINGS_PATH).sample(frac=0.2, random_state=42)
     evaluator = ModelEvaluator(user_item_matrix, movies_df, svd_model=svd_model)
 
     evaluation_results = evaluator.evaluate_svd(test_data)
     return {"evaluation_results": evaluation_results}
 
+
 @app.get("/evaluate_knn/{user_id}")
-async def evaluate_knn(user_id: int):
+async def evaluate_knn(user_id: int) -> dict:
+    """
+    Evaluate the k-NN model for a specific user.
+    """
     evaluator = ModelEvaluator(user_item_matrix, movies_df, knn_model=knn_model)
 
     evaluation_results = evaluator.evaluate_knn(user_id)
     return {"user_id": user_id, "evaluation_results": evaluation_results}
-

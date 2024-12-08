@@ -4,6 +4,7 @@ from scipy.sparse.linalg import svds
 import pickle
 from pandas import DataFrame
 from typing import Optional
+import mlflow
 
 
 class RecommenderTrainerSVD:
@@ -34,16 +35,25 @@ class RecommenderTrainerSVD:
         # Compute the mean user ratings
         user_ratings_mean = np.mean(self.user_item_matrix.values, axis=1)
         user_item_matrix_demeaned = self.user_item_matrix.values - user_ratings_mean.reshape(-1, 1)
+        
+        with mlflow.start_run(run_name="SVD Model Training"):
+            # Log parameters
+            mlflow.log_param("num_factors", self.num_factors)
+            mlflow.log_param("matrix_shape", self.user_item_matrix.shape)
 
-        # Perform matrix factorization using SVD
-        U, sigma, Vt = svds(user_item_matrix_demeaned, k=self.num_factors)
-        sigma = np.diag(sigma)
+            # Train the SVD model
+            U, sigma, Vt = np.linalg.svd(user_item_matrix_demeaned, full_matrices=False)
+            sigma = np.diag(sigma)
+            self.model = np.dot(np.dot(U, sigma), Vt) + user_ratings_mean.reshape(-1, 1)
 
-        # Reconstruct predictions
-        self.model = np.dot(np.dot(U, sigma), Vt) + user_ratings_mean.reshape(-1, 1)
+            # Log the model as an artifact
+            model_path = "recommender_svd_model.pkl"
+            with open(model_path, "wb") as file:
+                pickle.dump(self.model, file)
+            mlflow.log_artifact(model_path)
 
-        print("SVD model training completed successfully.")
-        return self.model
+            print("SVD model training completed successfully.")
+            return self.model
 
     def save_model(self, filepath: str = "recommender_svd_model.pkl") -> None:
         """

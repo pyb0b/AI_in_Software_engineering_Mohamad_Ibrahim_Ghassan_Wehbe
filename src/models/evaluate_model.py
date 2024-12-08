@@ -4,6 +4,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 from math import sqrt
 from pandas import DataFrame
 from typing import Optional, Dict
+import mlflow
 
 # Import RecommenderUtils from utils.py
 from src.utils.utils import RecommenderUtils
@@ -55,15 +56,19 @@ class ModelEvaluator:
             if user_idx is not None and movie_idx is not None:
                 return self.svd_model[user_idx, movie_idx]
             return np.nan
+        
+        with mlflow.start_run(run_name="SVD Model Evaluation"):
+            test_data["predicted_rating"] = test_data.apply(predict, axis=1)
+            valid_predictions = test_data.dropna(subset=["predicted_rating"])
+            rmse = sqrt(mean_squared_error(valid_predictions["rating"], valid_predictions["predicted_rating"]))
+            mae = mean_absolute_error(valid_predictions["rating"], valid_predictions["predicted_rating"])
 
-        test_data["predicted_rating"] = test_data.apply(predict, axis=1)
-        valid_predictions = test_data.dropna(subset=["predicted_rating"])
+            # Log metrics
+            mlflow.log_metric("RMSE", rmse)
+            mlflow.log_metric("MAE", mae)
 
-        rmse = sqrt(mean_squared_error(valid_predictions["rating"], valid_predictions["predicted_rating"]))
-        mae = mean_absolute_error(valid_predictions["rating"], valid_predictions["predicted_rating"])
-
-        print(f"SVD Model Evaluation: RMSE: {rmse:.4f}, MAE: {mae:.4f}")
-        return {"RMSE": rmse, "MAE": mae}
+            print(f"SVD Model Evaluation: RMSE={rmse:.4f}, MAE={mae:.4f}")
+            return {"RMSE": rmse, "MAE": mae}
 
     def evaluate_knn(self, test_data: DataFrame, k: int = 6) -> Dict[str, Optional[float]]:
         """

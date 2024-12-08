@@ -5,6 +5,8 @@ import pickle
 from pandas import DataFrame
 from typing import Optional
 
+import mlflow
+import mlflow.sklearn
 
 class RecommenderTrainerKNN:
     """
@@ -39,13 +41,25 @@ class RecommenderTrainerKNN:
         """
         # Convert user-item matrix to sparse format
         sparse_user_item_matrix = csr_matrix(self.user_item_matrix.values)
+        
+        with mlflow.start_run(run_name="kNN Model Training"):
+            # Log parameters
+            mlflow.log_param("metric", self.metric)
+            mlflow.log_param("algorithm", self.algorithm)
+            mlflow.log_param("matrix_shape", sparse_user_item_matrix.shape)
+            
+            # Initialize and fit the k-NN model
+            self.model = NearestNeighbors(metric=self.metric, algorithm=self.algorithm)
+            self.model.fit(sparse_user_item_matrix)
+            
+            # Log the model as an artifact
+            model_path = "recommender_knn_model.pkl"
+            with open(model_path, "wb") as file:
+                pickle.dump(self.model, file)
+            mlflow.log_artifact(model_path)
 
-        # Initialize and fit the k-NN model
-        self.model = NearestNeighbors(metric=self.metric, algorithm=self.algorithm)
-        self.model.fit(sparse_user_item_matrix)
-
-        print("k-NN model training completed successfully.")
-        return self.model
+            print("k-NN model training completed successfully.")
+            return self.model
 
     def save_model(self, filepath: str = "recommender_knn_model.pkl") -> None:
         """
@@ -74,3 +88,5 @@ class RecommenderTrainerKNN:
         print("Retraining k-NN model...")
         self.user_item_matrix = user_item_matrix
         return self.train_model()
+        
+    

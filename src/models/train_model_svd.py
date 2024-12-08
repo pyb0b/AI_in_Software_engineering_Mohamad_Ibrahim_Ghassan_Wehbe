@@ -21,6 +21,7 @@ class RecommenderTrainerSVD:
         """
         self.user_item_matrix = user_item_matrix
         self.num_factors = num_factors
+        # self.num_factors = min(num_factors, min(user_item_matrix.shape))  # Adjust num_factors to fit matrix dimensions
         self.model: Optional[np.ndarray] = None
 
     def train_model(self) -> np.ndarray:

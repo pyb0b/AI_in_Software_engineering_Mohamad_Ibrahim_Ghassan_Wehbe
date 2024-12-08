@@ -23,12 +23,12 @@
 - [x] Automate tasks (e.g., linting, testing, and training) using `PyInvoke`.
 
 ## 4. Testing
-- [ ] Write unit tests using `pytest` for:
+- [x] Write unit tests using `pytest` for:
   - Data loading and preprocessing functions.
   - Model training and evaluation functions.
   - API endpoints (integration tests).
-- [ ] Create a `tests` directory and organize test scripts.
-- [ ] Test the GUI functionality (e.g., `test_gui.py`).
+- [x] Create a `tests` directory and organize test scripts.
+- [x] Test the GUI functionality (e.g., `test_gui.py`).
 
 ## 5. Experiment Tracking
 - [ ] Integrate MLflow for tracking experiments.

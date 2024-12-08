@@ -14,7 +14,13 @@ fastapi = "^0.115.5"
 prometheus-fastapi-instrumentator = "^7.0.0"
 requests = "^2.32.3"
 uvicorn = "^0.32.1"
+pytest = "^8.3.4"
 
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
 
 [build-system]
 requires = ["poetry-core"]

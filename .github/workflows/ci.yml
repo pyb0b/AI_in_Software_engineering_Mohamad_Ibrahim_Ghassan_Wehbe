@@ -37,12 +37,12 @@ jobs:
 
       # Step 5: Run tests
       - name: Run tests
-        run: poetry run pytest
+        run: poetry run invoke test
 
       # Step 6: Run linting
       - name: Run linting
-        run: poetry run ruff .
+        run: poetry run invoke lint
 
       # Step 7: Run typing checks
       - name: Run type checks
-        run: poetry run mypy src
+        run: poetry run invoke type

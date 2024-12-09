@@ -2,13 +2,13 @@ from invoke import task
 
 @task
 def test(c):
-    """Run all tests with pytest."""
-    c.run("poetry run pytest tests/")
+    """Run tests with pytest."""
+    c.run("poetry run pytest", pty=True)
 
 @task
 def lint(c):
-    """Run ruff to lint and check the code."""
-    c.run("poetry run ruff check src/ tasks.py tests/")
+    """Run linting with Ruff."""
+    c.run("poetry run ruff .", pty=True)
 
 @task
 def format(c):
@@ -17,8 +17,8 @@ def format(c):
 
 @task
 def type(c):
-    """Check the types with mypy."""
-    c.run("poetry run mypy src/ tasks.py tests/")
+    """Run type checks with MyPy."""
+    c.run("poetry run mypy src", pty=True)
 
 @task
 def docs(c):

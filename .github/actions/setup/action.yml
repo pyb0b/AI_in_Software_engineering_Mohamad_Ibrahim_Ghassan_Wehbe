@@ -17,10 +17,12 @@ runs:
 
     - name: Install Poetry
       run: |
-        pip install --upgrade pip
+        python -m pip install --upgrade pip
         pip install pipx
         pipx install poetry
         poetry --version
 
     - name: Install dependencies
-      run: poetry install
+      run: |
+        poetry lock --no-update  # Ensure lock file matches pyproject.toml
+        poetry install --with dev

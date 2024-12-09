@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "recommender-system"
 version = "0.1.0"
-description = ""
+description = "A recommender system for movies."
 authors = ["Ghassan Wehbe <ghassan.wehbe1@net.usj.edu.lb>"]
 readme = "README.md"
 
@@ -23,6 +23,9 @@ pythonpath = ["."]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
+
+[tool.poetry.scripts]
+softeng-data-pipeline = "src.main:main"
 
 [build-system]
 requires = ["poetry-core"]

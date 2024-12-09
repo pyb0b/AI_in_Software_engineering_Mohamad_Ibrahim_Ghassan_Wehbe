@@ -27,7 +27,7 @@ svd_model = None
 recommender_utils: RecommenderUtils = None
 
 # Paths to data
-MOVIES_PATH = "movies.csv"
+MOVIES_PATH = "movies.csv" 
 RATINGS_PATH = "ratings.csv"
 
 

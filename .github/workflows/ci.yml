@@ -1,0 +1,48 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      # Step 3: Install Poetry
+      - name: Install Poetry
+        run: |
+          pip install --upgrade pip
+          pip install pipx
+          pipx install poetry
+          poetry --version
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: poetry install
+
+      # Step 5: Run tests
+      - name: Run tests
+        run: poetry run pytest
+
+      # Step 6: Run linting
+      - name: Run linting
+        run: poetry run ruff .
+
+      # Step 7: Run typing checks
+      - name: Run type checks
+        run: poetry run mypy src

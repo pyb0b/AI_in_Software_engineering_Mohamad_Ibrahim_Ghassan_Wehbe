@@ -26,6 +26,14 @@ pytest = "^8.3.4"
 invoke = "^2.2.0"
 ruff = "^0.8.2"
 
+[tool.ruff]
+line-length = 88  # Adjust as per your preference
+exclude = [
+    ".git",
+    "mlruns",
+    "tests/integration/test_gui.py"  # Add any specific files causing issues
+]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -7,7 +7,7 @@ def test(c):
 
 @task
 def lint(c):
-    c.run("ruff .")
+    c.run("ruff src tests")
 
 @task
 def format(c):

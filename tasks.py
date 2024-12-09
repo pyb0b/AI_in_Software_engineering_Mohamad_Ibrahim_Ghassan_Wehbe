@@ -7,8 +7,7 @@ def test(c):
 
 @task
 def lint(c):
-    """Run linting with Ruff."""
-    c.run("poetry run ruff .", pty=True)
+    c.run("ruff .")
 
 @task
 def format(c):

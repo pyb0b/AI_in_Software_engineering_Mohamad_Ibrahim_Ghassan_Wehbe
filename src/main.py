@@ -1,4 +1,4 @@
-import pandas as pd
+from src.config.config import load_config
 from src.data.data_loader import DataLoader
 from src.features.feature_engineering import FeatureEngineer
 from src.models.train_model_knn import RecommenderTrainerKNN
@@ -8,18 +8,21 @@ from src.models.evaluate_model import ModelEvaluator
 from pandas import DataFrame
 
 
-# Paths to data
-MOVIES_PATH = "movies.csv"
-RATINGS_PATH = "ratings.csv"
-
-
 def main() -> None:
     """
     Main script to execute the workflow for loading data, preprocessing, 
     training models, evaluating them, and saving the results.
     """
+    # Load configuration
+    config = load_config()
+    print("Loaded configuration:", config)
+
+    # Paths to data from config
+    movies_path = config.data.movies_path
+    ratings_path = config.data.ratings_path
+
     # Load and preprocess data
-    data_loader = DataLoader(MOVIES_PATH, RATINGS_PATH)
+    data_loader = DataLoader(movies_path, ratings_path)
     movies_df, ratings_df = data_loader.load_data()
     movies_df, ratings_df = data_loader.preprocess_data(movies_df, ratings_df)
 
@@ -27,9 +30,16 @@ def main() -> None:
     feature_engineer = FeatureEngineer(ratings_df)
     user_item_sparse, user_item_matrix = feature_engineer.create_user_item_matrix()
 
-    # Initialize model trainers
-    knn_trainer = RecommenderTrainerKNN(user_item_matrix)
-    svd_trainer = RecommenderTrainerSVD(user_item_matrix)
+    # Initialize model trainers with parameters from config
+    knn_trainer = RecommenderTrainerKNN(
+        user_item_matrix,
+        metric=config.knn_model.metric,
+        algorithm=config.knn_model.algorithm,
+    )
+    svd_trainer = RecommenderTrainerSVD(
+        user_item_matrix,
+        num_factors=config.svd_model.num_factors,
+    )
 
     # Train models
     knn_model = knn_trainer.train_model()

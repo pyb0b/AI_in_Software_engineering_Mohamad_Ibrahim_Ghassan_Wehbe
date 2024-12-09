@@ -1,0 +1,15 @@
+data:
+  movies_path: "./movies.csv"  # Path to the movies dataset
+  ratings_path: "./ratings.csv"  # Path to the ratings dataset
+
+knn_model:
+  metric: "cosine"  # Metric for k-NN (cosine or euclidean)
+  algorithm: "brute"  # Algorithm for k-NN (brute or kd_tree)
+  n_neighbors: 6  # Number of neighbors
+
+svd_model:
+  num_factors: 50  # Number of latent factors for SVD
+
+mlflow:
+  tracking_uri: "./mlruns"  # MLflow tracking directory
+  experiment_name: "RecommenderSystem"  # Experiment name for MLflow

@@ -1,0 +1,26 @@
+name: Setup Python and Poetry
+description: Install Python and Poetry, cache dependencies
+
+inputs:
+  python-version:
+    description: Python version to use
+    required: true
+    default: 3.12
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install Poetry
+      run: |
+        pip install --upgrade pip
+        pip install pipx
+        pipx install poetry
+        poetry --version
+
+    - name: Install dependencies
+      run: poetry install

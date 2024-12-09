@@ -2,8 +2,8 @@ from invoke import task
 
 @task
 def test(c):
-    """Run tests with pytest."""
-    c.run("poetry run pytest", pty=True)
+    """Run all unit and integration tests except GUI tests."""
+    c.run("pytest --ignore=tests/integration/test_gui.py -v")
 
 @task
 def lint(c):

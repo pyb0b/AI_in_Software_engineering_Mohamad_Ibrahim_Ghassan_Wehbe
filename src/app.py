@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
-import pickle
 import pandas as pd
 
 # Import components
@@ -60,7 +59,8 @@ class Rating(BaseModel):
 @app.on_event("startup")
 async def load_data_and_initialize() -> None:
     """
-    Load data, initialize models, and prepare global variables during app startup.
+    Load data, initialize models, 
+    and prepare global variables during app startup.
     """
     global movies_df, ratings_df, user_item_sparse, user_item_matrix, knn_model, svd_model, recommender_utils
 

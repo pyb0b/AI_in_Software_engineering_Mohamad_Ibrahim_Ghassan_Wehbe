@@ -2,6 +2,7 @@ import pandas as pd
 from pandas import DataFrame
 from typing import Tuple, Optional, Dict
 
+
 class DataLoader:
     """
     A class to handle loading, preprocessing, and managing movie and ratings datasets.

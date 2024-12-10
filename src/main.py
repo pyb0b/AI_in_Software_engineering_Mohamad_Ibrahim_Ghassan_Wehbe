@@ -10,7 +10,7 @@ from pandas import DataFrame
 
 def main() -> None:
     """
-    Main script to execute the workflow for loading data, preprocessing, 
+    Main script to execute the workflow for loading data, preprocessing,
     training models, evaluating them, and saving the results.
     """
     # Load configuration

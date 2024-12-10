@@ -7,7 +7,10 @@ def test(c):
 
 @task
 def lint(c):
-    c.run("ruff src tests")
+    """
+    Run Flake8 for linting the codebase.
+    """
+    c.run("flake8 src tests")
 
 @task
 def format(c):

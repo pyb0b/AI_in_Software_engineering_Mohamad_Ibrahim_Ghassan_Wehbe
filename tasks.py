@@ -7,9 +7,7 @@ def test(c):
 
 @task
 def lint(c):
-    """
-    Run Flake8 for linting the codebase.
-    """
+    # Run flake8 only (autoflake removed)
     c.run("flake8 src tests")
 
 @task

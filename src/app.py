@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List
+from typing import Dict, List
 import pandas as pd
 
 # Import components
@@ -13,7 +13,7 @@ from src.models.evaluate_model import ModelEvaluator
 from src.monitoring.monitoring import setup_monitoring
 
 # Initialize FastAPI with monitoring
-app = FastAPI()
+app = FastAPI(title="Recommender System", version="1.0")
 setup_monitoring(app)
 
 # Global variables for models and data
@@ -183,3 +183,8 @@ async def evaluate_knn(user_id: int) -> dict:
 
     evaluation_results = evaluator.evaluate_knn(user_id)
     return {"user_id": user_id, "evaluation_results": evaluation_results}
+
+@app.get("/health")
+async def health_check() -> Dict[str, str]:
+    return {"status": "healthy"}
+
